@@ -1,0 +1,29 @@
+﻿@page "/people/edit/{personId:int}"
+@inject HttpClient http
+@inject NavigationManager navigationManager
+
+<h3>Edit</h3>
+
+@if (person.Id != personId)
+{
+    <p>The person does not exist</p>
+}
+else
+{
+    <PersonForm ButtonText="Edit Person" Person="person" OnValidSubmit="@EditPerson" isReadOnly="false" />
+}
+
+@code {
+    [Parameter] public int personId { get; set; }
+    Person person = new Person();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        person = await http.GetFromJsonAsync<Person>($"api/people/{personId}");
+    }
+    async Task EditPerson()
+    {
+        await http.PutAsJsonAsync("api/people", person);
+        navigationManager.NavigateTo("people");
+    }
+}

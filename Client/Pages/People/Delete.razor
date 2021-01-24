@@ -1,0 +1,43 @@
+﻿@page "/people/delete/{personId:int}"
+@inject HttpClient http
+@inject NavigationManager navigationManager
+@inject IJSRuntime js
+
+<h3>Delete</h3>
+
+@if (person.Id != personId)
+{
+    <p>The person does not exist</p>
+}
+else
+{
+    <PersonForm ButtonText="Delete Person" Person="person" OnValidSubmit="@DeletePerson" isReadOnly="true" />
+}
+
+@code {
+    [Parameter] public int personId { get; set; }
+    Person person = new Person();
+
+    protected async override Task OnParametersSetAsync()
+    {
+        await LoadPeople();
+    }
+
+    async Task LoadPeople()
+    {
+        person = await http.GetFromJsonAsync<Person>($"api/people/{personId}");
+    }
+
+    async Task DeletePerson()
+    {
+        if (await js.InvokeAsync<bool>("confirm", $"Do you want to delete {person.Name}?"))
+        {
+            await http.DeleteAsync($"api/people/{personId}");
+            navigationManager.NavigateTo("people");
+        }
+        else
+        {
+            navigationManager.NavigateTo("people");
+        }
+    }
+}

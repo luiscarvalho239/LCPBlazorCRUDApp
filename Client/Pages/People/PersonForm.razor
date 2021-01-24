@@ -1,0 +1,28 @@
+﻿<EditForm Model="@Person" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>Name:</label>
+        <div>
+            @if (isReadOnly == false)
+            {
+                <InputText @bind-Value="@Person.Name" />
+            }
+            else
+            {
+                <input type="text" value="@Person.Name" readonly="@isReadOnly" />
+            }
+            
+            <ValidationMessage For="@(() => Person.Name)" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">
+        @ButtonText
+    </button>
+</EditForm>
+
+@code {
+    [Parameter] public Person Person { get; set; }
+    [Parameter] public string ButtonText { get; set; } = "Save Person";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+    [Parameter] public bool isReadOnly { get; set; } = false;
+}
